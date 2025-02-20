@@ -2,7 +2,7 @@
 <h2>This tool can be used to find <i>POSSIBLE</i> endpoints on javascript files.</h3>
 <h3>⚠️ This tool uses regex to find the endpoints so it can generate false positives.⚠️</h3>
 <br>
-<h1>Usase</h1>
+<h1>Usage</h1>
 
 <b>The tool will visit each link found on a page and look for JS files and then look for possible endpoints in the JS file<b>
 
