@@ -11,6 +11,7 @@
 + -x <i><b>Set the headers to be used</i> (already has generic headers set)
 + -v <i><b>Verbose mode (will save Js files and URLs to the text file even if no endpoint was found)</i>
 + -d <i><b>Set a delay to use between requests (Default set to 0.3ms) </i>
++ -p <i><b>Match URL directory up to a specified depth. Default 3 </i>
 <br>
 <b><i>Example</i>: Python endHunter.py -t https://targetwebsite.com -o target.txt -d 0.7 -x {User-Agent: BugHunter} -v </br><br>
 ⚠️Remember to always use the http/https in target⚠️

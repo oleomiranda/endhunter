@@ -18,10 +18,12 @@ class endHunter():
     parser.add_argument("-o", "--output", help="File to write the results", dest="file")
     parser.add_argument("-v", "--verbose", help="Will write the Url and JS url to the file even if no possible endpoint was found", action="store_true")
     parser.add_argument("-d", "--delay", help="Add delay between each request", dest="delay", default=0.3)
+    parser.add_argument("-p", "--depth", help="Match URL directory up to a specified depth. Default 3", dest="depth", default=3)
     parser.add_argument("-x", help="Define the header to be used on requests", dest="header", default={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'})
 
     arguments = parser.parse_args()
 
+    self.depth = int(arguments.depth)
     self.target_site = arguments.target
     self.file = arguments.file
     self.verbose = arguments.verbose
@@ -46,8 +48,10 @@ class endHunter():
       self.links_to_visit.remove(target_link)
       ignored_link = self.should_ignore(target_link)
       if ignored_link:
+        print(f'LINK IGNORADO -> {target_link}')
         continue
       target_link = self.url_format_verifier(target_link)
+      print(f"proximo target_link = {target_link}")
       if self.target_no_http in target_link:
         self.visited_links.append(target_link)
         print(f"target link -> {target_link}")
@@ -84,7 +88,7 @@ class endHunter():
 
   def search_on_js(self, url, foundAt):
     sleep(float(self.delay))
-    site = requests.get(url)
+    site = requests.get(url, headers=self.headers)
     content = site.text
 
     endpoints = re.findall(r'(?:")(\/\w+[^\s|\[|\]|\(|\)|\+|\^|\.|,]+)(?:")', content)
@@ -92,15 +96,17 @@ class endHunter():
     self.write_to_file(url, foundAt, endpoints)
 
   def should_ignore(self, url):
-
-    if re.search(r'(\.css\/*|\.jpg\/*|\.png\/*|\.ico\/*|\.svg\/*|\.js\/*|\.json\/*|\.jpeg\/*|\.pdf\/*)', url):
+    files = r'(\.css\/*|\.jpg\/*|\.png\/*|\.ico\/*|\.svg\/*|\.js\/*|\.json\/*|\.jpeg\/*|\.pdf\/*|'
+    depth = r"\w+" + r"\/.+" * self.depth + r"\/?)"
+    pattern = files + depth
+    if re.search(pattern, url):
         return True
     return False
 
   def url_format_verifier(self, url):
     if re.search(r'[^\/]$', url):
       url = url + "/"
-    if re.search('^http.+', url):
+    if re.search('^/.*', url):
       url = urlparser.urljoin(self.target_site, url)
     return url
 
